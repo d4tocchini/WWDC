@@ -137,9 +137,7 @@ class SessionsTableViewController: NSViewController {
         guard !hasPerformedFirstUpdate && sessionRowProvider != nil else { return }
         hasPerformedFirstUpdate = true
 
-        filterResults.results { [weak self] in
-            self?.updateWith(searchResults: $0, animated: true, selecting: nil)
-        }
+        updateWith(searchResults: filterResults.latestSearchResults, animated: true, selecting: nil)
     }
 
     private func updateWith(searchResults: Results<Session>?, animated: Bool, selecting session: SessionIdentifiable?) {
@@ -312,9 +310,9 @@ class SessionsTableViewController: NSViewController {
 
                 self.tableView.beginUpdates()
 
-                self.tableView.removeRows(at: removedIndexes, withAnimation: [NSTableView.AnimationOptions.slideLeft])
+                self.tableView.removeRows(at: removedIndexes, withAnimation: [.slideLeft])
 
-                self.tableView.insertRows(at: addedIndexes, withAnimation: [NSTableView.AnimationOptions.slideDown])
+                self.tableView.insertRows(at: addedIndexes, withAnimation: [.slideDown])
 
                 // insertRows(::) and removeRows(::) will query the delegate for the row count at the beginning
                 // so we delay updating the data model until after those methods have done their thing
@@ -351,8 +349,8 @@ class SessionsTableViewController: NSViewController {
     /// nil to let the table figure out what selection to apply after the update.
     func setFilterResults(_ filterResults: FilterResults, animated: Bool, selecting: SessionIdentifiable?) {
         _filterResults = filterResults
-        filterResults.results {
-            self.updateWith(searchResults: $0, animated: animated, selecting: selecting)
+        filterResults.observe { [weak self] in
+            self?.updateWith(searchResults: $0, animated: animated, selecting: selecting)
         }
     }
 
@@ -363,8 +361,8 @@ class SessionsTableViewController: NSViewController {
         }
         set {
             _filterResults = newValue
-            newValue.results {
-                self.updateWith(searchResults: $0, animated: false, selecting: nil)
+            filterResults.observe { [weak self] in
+                self?.updateWith(searchResults: $0, animated: false, selecting: nil)
             }
         }
     }
