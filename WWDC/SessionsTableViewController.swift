@@ -137,7 +137,7 @@ class SessionsTableViewController: NSViewController {
         guard !hasPerformedFirstUpdate && sessionRowProvider != nil else { return }
         hasPerformedFirstUpdate = true
 
-        updateWith(searchResults: filterResults.latestSearchResults, animated: true, selecting: nil)
+        updateWith(searchResults: filterResults.latestSearchResults, animated: false, selecting: nil)
     }
 
     private func updateWith(searchResults: Results<Session>?, animated: Bool, selecting session: SessionIdentifiable?) {
@@ -297,9 +297,7 @@ class SessionsTableViewController: NSViewController {
 
                 NSAnimationContext.beginGrouping()
                 let context = NSAnimationContext.current
-                if !animated {
-                    context.duration = 0
-                }
+                context.duration = animated ? 0.35 : 0
 
                 context.completionHandler = {
                     NSAnimationContext.runAnimationGroup({ (context) in

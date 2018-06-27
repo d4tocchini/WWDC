@@ -145,7 +145,7 @@ final class FilterResults {
             let objects = realm.objects(Session.self).filter(query)
 
             Observable
-                .shallowObservable(from: objects, synchronousStart: false)
+                .shallowObservable(from: objects, synchronousStart: true)
                 .subscribe(onNext: { [weak self] in
                     self?.latestSearchResults = $0
                     observerClosure($0)
